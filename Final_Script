@@ -1,0 +1,417 @@
+#Loading packages
+library(datos)
+library(ggplot2)
+library(readr)
+library(scales)
+library(stringr)
+library(utf8)
+library(devtools)
+library(ggpubr)
+#Loading data base
+DBT=read_csv2("Teachers.csv")
+DBS=read_csv2("Students2.csv")
+DBC=read_csv2("Combinado.csv")
+attach(DBT)
+
+#Creating teacher score "VarP1"
+Cod<-function(A,B,C,D){
+  Score<-numeric()
+  for (i in 1:length(A)) {
+    if(A[i]=="5 clases"){SA=1} else {SA=0};
+    if(B[i]=="3 clases"){SB=1} else {SB=0};
+    if(C[i]=="Ejercicios de repaso - Conclusión del día - Ejercicios del día"){SC=1} else {SC=0};
+    if(D[i]=="Verificando sus respuestas con las respuestas del solucionario del CE."){SD=1} else {SD=0};
+    Score[i]=(SA+SB+SC+SD)/4*10}
+  for (i in 1:length(A)) {
+    if(Score[i]==0|Score[i]==2.5){Score[i]="Malo"};
+    if(Score[i]==5){Score[i]="Regular"};
+    if(Score[i]==7.5){Score[i]="Muy bueno"};
+    if(Score[i]==10){Score[i]="Excelente"};
+  }
+  Score;
+}
+VarP1=Cod(Var11,Var12,Var13,Var14)
+
+#************************************ Slide 13, graph *************************************************
+#Var 15 (Que los estudiantes realicen los ejercicios del CE es:)
+Traducir1<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Muy importante")
+      A[i]="Very important"
+    if(A[i]=="Importante")
+      A[i]="Important"
+    if(A[i]=="Poco importante")
+      A[i]="Not very important"
+    if(A[i]=="Nada importante")
+      A[i]="Not important at all"
+  }
+  A;
+}
+Var15=Traducir1(Var15)
+
+d1=data.frame(table(Var15))
+cat=c("Very important","Important","Not very important","Not important at all")
+freq=c(84,7,0,0)
+d1=data.frame(cat,freq)
+d2=data.frame(x=d1$cat,y=d1$freq)
+d2$x=factor(d2$x,levels=c("Very important","Important","Not very important","Not important at all"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of teachers", x = "Opinion") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+#************************************ Slide 16, graph *************************************************
+#Var 16 (La frecuencia con la que asigno a mis estudiantes la tarea en el CE es:)
+Traducir2<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Siempre")
+      A[i]="Always"
+    if(A[i]=="Casi siempre")
+      A[i]="Almost always"
+    if(A[i]=="A menudo")
+      A[i]="Often"
+    if(A[i]=="Casi nunca")
+      A[i]="Almost never"
+    if(A[i]=="Nunca")
+      A[i]="Never"
+  }
+  A;
+}
+Var16=Traducir2(Var16)
+
+
+d1=data.frame(table(Var16))
+cat=c("Always","Almost always","Often","Almost never","Never")
+freq=c(73,14,3,1,0)
+d1=data.frame(cat,freq)
+d2=data.frame(x=d1$cat,y=d1$freq)
+d2$x=factor(d2$x,levels=c("Always","Almost always","Often","Almost never","Never"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of teachers", x = "Opinion") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+#Var 17 (¿Con qué frecuencia considera que la información del LT le permite a los estudiantes resolver los ejercicios del CE?)
+Traducir3<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Siempre")
+      A[i]="Always"
+    if(A[i]=="Casi siempre")
+      A[i]="Almost always"
+    if(A[i]=="A menudo")
+      A[i]="Often"
+    if(A[i]=="Casi nunca")
+      A[i]="Almost never"
+    if(A[i]=="Nunca")
+      A[i]="Never"
+  }
+  A;
+}
+Var17=Traducir3(Var17)
+
+d1=data.frame(table(Var17))
+cat=c("Always","Almost always","Often","Almost never","Never")
+freq=c(58,29,4,0,0)
+d1=data.frame(cat,freq)
+d2=data.frame(x=d1$cat,y=d1$freq)
+d2$x=factor(d2$x,levels=c("Always","Almost always","Often","Almost never","Never"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of teachers", x = "Frequency") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+ 
+
+#************************************ Slide 17, graph *************************************************
+#Var 18 (¿Con qué frecuencia detecta errores matemáticos (en las respuestas del solucionario) o de diagramación (por ejemplo ejercicios mal digitados o que no corresponden al tema) en el CE?)
+Traducir4<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Siempre")
+      A[i]="Always"
+    if(A[i]=="Casi siempre")
+      A[i]="Almost always"
+    if(A[i]=="A menudo")
+      A[i]="Often"
+    if(A[i]=="Casi nunca")
+      A[i]="Almost never"
+    if(A[i]=="Nunca")
+      A[i]="Never"
+  }
+  A;
+}
+Var18=Traducir4(Var18)
+
+
+d1=data.frame(table(Var18))
+d2=data.frame(x=d1$Var18,y=d1$Freq)
+d2$x=factor(d2$x,levels=c("Always","Almost always","Often","Almost never","Never"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of teachers", x = "Opinion") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+#Var 20 (¿Qué calificación le asignaría a la calidad del CE?)
+Traducir5<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Excelente")
+      A[i]="Excellent"
+    if(A[i]=="Muy buena")
+      A[i]="Very good"
+    if(A[i]=="Buena")
+      A[i]="Good"
+    if(A[i]=="Regular")
+      A[i]="Fair"
+    if(A[i]=="Mala")
+      A[i]="Poor"
+  }
+  A;
+}
+Var20=Traducir5(Var20)
+
+d1=data.frame(table(Var20))
+cat=c("Excellent","Very good","Good","Fair","Poor")
+freq=c(26,51,10,4,0)
+d1=data.frame(cat,freq)
+d2=data.frame(x=d1$cat,y=d1$freq)
+d2$x=factor(d2$x,levels=c("Excellent","Very good","Good","Fair","Poor"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of teachers", x = "Opinion") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+
+#************************************ Slide 18, graph *************************************************
+#Var 23 (¿Con qué frecuencia revisa a los estudiantes la tarea de Matemática de la clase anterior?
+Traducir6<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Siempre")
+      A[i]="Always"
+    if(A[i]=="Casi siempre")
+      A[i]="Almost always"
+    if(A[i]=="A menudo")
+      A[i]="Often"
+    if(A[i]=="Casi nunca")
+      A[i]="Almost never"
+    if(A[i]=="Nunca")
+      A[i]="Never"
+  }
+  A;
+}
+Var23=Traducir4(Var23)
+
+
+d1=data.frame(table(Var23))
+d2=data.frame(x=d1$Var23,y=d1$Freq)
+d2$x=factor(d2$x,levels=c("Always","Almost always","Often","Almost never","Never"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of teachers", x = "Frequency") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+#************************************ Slide 19, graph *************************************************
+#Var 14 ¿Qué tan motivado te sientes para hacer la tarea de Matemática?
+Traducir7<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Bastante")
+      A[i]="Quite"
+    if(A[i]=="Lo normal")
+      A[i]="The norm"
+    if(A[i]=="Poco")
+      A[i]="A little"
+    if(A[i]=="Nada")
+      A[i]="Not at all"
+  }
+  A;
+}
+DBS$Var14=Traducir7(DBS$Var14)
+
+
+d1=data.frame(table(DBS$Var14))
+d2=data.frame(x=d1$Var1,y=d1$Freq)
+d2$x=factor(d2$x,levels=c("Quite","The norm","A little","Not at all"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of students", x = "Opinion") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+
+#************************************ Slide 20, graph *************************************************
+#Var DBS$Var15 (¿¿Con qué frecuencia cumples con la tarea de Matemática?)
+Traducir8<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Siempre")
+      A[i]="Always"
+    if(A[i]=="Casi siempre")
+      A[i]="Almost always"
+    if(A[i]=="A menudo")
+      A[i]="Often"
+    if(A[i]=="Casi nunca")
+      A[i]="Almost never"
+    if(A[i]=="Nunca")
+      A[i]="Never"
+  }
+  A;
+}
+DBS$Var15=Traducir8(DBS$Var15)
+
+
+d1=data.frame(table(DBS$Var15))
+cat=c("Always","Almost always","Often","Almost never","Never")
+freq=c(259,149,50,10,0)
+d1=data.frame(cat,freq)
+d2=data.frame(x=d1$cat,y=d1$freq)
+d2$x=factor(d2$x,levels=c("Always","Almost always","Often","Almost never","Never"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of students", x = "Frequency") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+#DBS$Var28 (¿Con qué frecuencia comprendes la clase de Matemática?)
+Traducir9<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Siempre")
+      A[i]="Always"
+    if(A[i]=="Casi siempre")
+      A[i]="Almost always"
+    if(A[i]=="A menudo")
+      A[i]="Often"
+    if(A[i]=="Casi nunca")
+      A[i]="Almost never"
+    if(A[i]=="Nunca")
+      A[i]="Never"
+  }
+  A;
+}
+DBS$Var28=Traducir9(DBS$Var28)
+
+
+d1=data.frame(table(DBS$Var28))
+d2=data.frame(x=d1$Var1,y=d1$Freq)
+d2$x=factor(d2$x,levels=c("Always","Almost always","Often","Almost never","Never"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of students", x = "Frequency") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+
+#************************************ Slide 21, graph *************************************************
+#Var DBS$Var11 (¿Te motiva tu responsable para que hagas la tarea de Matemática?)
+Traducir10<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Siempre")
+      A[i]="Always"
+    if(A[i]=="Casi siempre")
+      A[i]="Almost always"
+    if(A[i]=="A menudo")
+      A[i]="Often"
+    if(A[i]=="Casi nunca")
+      A[i]="Almost never"
+    if(A[i]=="Nunca")
+      A[i]="Never"
+  }
+  A;
+}
+DBS$Var11=Traducir8(DBS$Var11)
+
+
+d1=data.frame(table(DBS$Var11))
+d2=data.frame(x=d1$Var1,y=d1$Freq)
+d2$x=factor(d2$x,levels=c("Always","Almost always","Often","Almost never","Never"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of students", x = "Frequency") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+#************************************ Slide 22, graph *************************************************
+#DBS$Var18 y DBS$Var41 (¿Qué tipo de ayuda te proporciona tu responsable para que cumplas con la tarea de Matemática?)
+Traducir11<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Solo me recuerda que tengo que cumplir con la tarea de Matemática."|A[i]=="Solo le recuerdo que tiene que cumplir con la tarea de Matemática.")
+      A[i]="Answer_1"
+    if(A[i]=="Me recuerda hacer la tarea y garantiza que tenga el tiempo disponible para estudiar."|A[i]=="Le recuerdo hacer su tarea y garantizo que tenga el tiempo disponible para estudiar.")
+      A[i]="Answer_2"
+    if(A[i]=="Me recuerda hacer la tarea, garantiza que tenga el tiempo disponible para estudiar y supervisa mi trabajo mientras hago la tarea."|A[i]=="Le recuerdo hacer su tarea, garantizo que tenga el tiempo disponible para estudiar y superviso su trabajo mientras hace la tarea.")
+      A[i]="Answer_3"
+    if(A[i]=="Paga a una persona para que me ayude a cumplir con la tarea."|A[i]=="Pago a una persona para que apoye a mi hijo o tutelado a cumplir con la tarea.")
+      A[i]="Answer_4"
+    if(A[i]=="Ninguno"|A[i]=="Ninguna"|A[i]=="Me ayuda"|A[i]=="me aayuda cundo no entiendo"|A[i]=="me motiva hacer la tarea"|A[i]=="Solo con materiales del ministerio de educación nos manda y enseña en clases"|A[i]=="Me motiva y alienta al hacer mis tareas no sólo de matemáticas  si no también  en otra materias"|A[i]=="Yo misma me acuerdo y me motivo sola" |A[i]=="No me proporciona ayuda"|A[i]=="sino entiende resolvemos el ejercicio  juntos y le oponemos  la respuesta"|A[i]=="Casi no le digo pero yo veo que el la hace"|A[i]=="Ella el mayor tiempo pasa sola en casa y ella trabaja sola"|A[i]=="No me dice nada , yo soy el que cumplo con la tarea de matemática sin que me digan nada"|A[i]=="Pues suelo pasar sola en mi casa el mayor tiempo y pues nadie me dice que trabaje, yo trabajo por voluntad propia"|A[i]=="Mis padres trabajan vienen noche y mis abuelos no pueden mate"|A[i]=="Casi nada"|A[i]=="No me dice nada :p ( es mi responsabilidad dice )"|A[i]=="No me dicen nada, pero igual siempre las hago")
+      A[i]="Answer_0"
+  }
+  A;
+}
+DBS$Var18=Traducir11(DBS$Var18)
+DBS$Var41=Traducir11(DBS$Var41)
+
+
+Type_of_answer <- c(rep("Answer_0",2),rep("Answer_1",2),rep("Answer_2",2),rep("Answer_3",2),rep("Answer_4",2))
+Participant <- rep(c("Students","Parents"),5)
+ST=data.frame(table(DBS$Var18))
+Pa=data.frame(table(DBS$Var41))
+Values=c(13,5,164,164,103,119,187,175,1,5)
+data <- data.frame(Type_of_answer,Participant,Values)
+data$Type_of_answer=factor(data$Type_of_answer,levels=c("Answer_0","Answer_1","Answer_2","Answer_3","Answer_4"))
+
+ggplot(data, aes(fill=Participant, y=Values, x=Type_of_answer)) + 
+  geom_bar(position="dodge", stat="identity",color = "black")+ 
+  geom_text(aes(label =Values), position=position_dodge(.9), vjust=-0.3,color = "black")+
+  scale_fill_manual(values = c("#708090","#ffffff"))
