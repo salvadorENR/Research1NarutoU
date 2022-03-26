@@ -1,0 +1,749 @@
+#Loading packages
+library(datos)
+library(ggplot2)
+library(readr)
+library(scales)
+library(stringr)
+library(utf8)
+library(devtools)
+library(ggpubr)
+#Loading data base
+DBT=read_csv2("Teachers.csv")
+DBS=read_csv2("Students2.csv")
+DBC=read_csv2("Combinado.csv")
+attach(DBT)
+
+#Creating teacher score "VarP1"
+Cod<-function(A,B,C,D){
+  Score<-numeric()
+  for (i in 1:length(A)) {
+    if(A[i]=="5 clases"){SA=1} else {SA=0};
+    if(B[i]=="3 clases"){SB=1} else {SB=0};
+    if(C[i]=="Ejercicios de repaso - Conclusión del día - Ejercicios del día"){SC=1} else {SC=0};
+    if(D[i]=="Verificando sus respuestas con las respuestas del solucionario del CE."){SD=1} else {SD=0};
+    Score[i]=(SA+SB+SC+SD)/4*10}
+  for (i in 1:length(A)) {
+    if(Score[i]==0|Score[i]==2.5){Score[i]="Malo"};
+    if(Score[i]==5){Score[i]="Regular"};
+    if(Score[i]==7.5){Score[i]="Muy bueno"};
+    if(Score[i]==10){Score[i]="Excelente"};
+  }
+  Score;
+}
+VarP1=Cod(Var11,Var12,Var13,Var14)
+
+#************************************ Slide 15, graph *************************************************
+#Var4 (Género)
+Traducir<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Masculino")
+      A[i]="Male"
+    if(A[i]=="Femenino")
+      A[i]="Female"
+  }
+  A;
+}
+Var4=Traducir(Var4)
+
+d1=data.frame(table(Var4))
+d2=data.frame(x=d1$Var4,y=d1$Freq)
+d2$y<-round(d2$y/length(Var4)*100,digits = 1)
+d2$x<-enc2utf8(c("Female","Male"))
+d2$x=factor(d2$x,levels=c("Female","Male"))
+
+ggplot(d2, aes(x="",y=y,fill=x)) + geom_col(color = "black")+
+  #ggtitle("Turno de trabajo")+ 
+  theme(plot.title = element_text(hjust = 0.5))+
+  geom_text(aes(label = percent(y/100)),position = position_stack(vjust = 0.5),size=10)+
+  coord_polar(theta = "y") +theme(legend.position = "right")+
+  scale_fill_manual(values = c("#3F762B", "#ffffff"))+
+  guides(fill = guide_legend(title = "Gender"))+
+  theme(axis.text = element_blank(),axis.ticks = element_blank(),
+        axis.title = element_blank(),panel.grid = element_blank(),
+        legend.text = element_text(size = 20),
+        legend.title = element_text(size = 20),
+        panel.background = element_rect(fill = "#ffffff"),
+        plot.background = element_rect(fill = "#ffffff"),
+        legend.background = element_rect(fill = "#ffffff"))
+
+#Var4 (zona)
+Traducir2<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Rural")
+      A[i]="Rural"
+    if(A[i]=="Urbana")
+      A[i]="Urban"
+  }
+  A;
+}
+Var7=Traducir2(Var7)
+
+d1=data.frame(table(Var7))
+d2=data.frame(x=d1$Var7,y=d1$Freq)
+d2$y<-round(d2$y/length(Var7)*100,digits = 1)
+d2$x<-enc2utf8(c("Rural","Urban"))
+d2$x=factor(d2$x,levels=c("Rural","Urban"))
+
+ggplot(d2, aes(x="",y=y,fill=x)) + geom_col(color = "black")+
+  #ggtitle("Turno de trabajo")+ 
+  theme(plot.title = element_text(hjust = 0.5))+
+  geom_text(aes(label = percent(y/100)),position = position_stack(vjust = 0.5),size=10)+
+  coord_polar(theta = "y") +theme(legend.position = "right")+
+  scale_fill_manual(values = c("#3F762B", "#ffffff"))+
+  guides(fill = guide_legend(title = "Zone"))+
+  theme(axis.text = element_blank(),axis.ticks = element_blank(),
+        axis.title = element_blank(),panel.grid = element_blank(),
+        legend.text = element_text(size = 20),
+        legend.title = element_text(size = 20),
+        panel.background = element_rect(fill = "#ffffff"),
+        plot.background = element_rect(fill = "#ffffff"),
+        legend.background = element_rect(fill = "#ffffff"))
+
+#Var 10 (grado)
+Traducir3<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="3.er grado")
+      A[i]="3rd grade"
+    if(A[i]=="6.o grado")
+      A[i]="6th grade"
+    if(A[i]=="9.o grado")
+      A[i]="9th grade"
+  }
+  A;
+}
+Var10=Traducir3(Var10)
+
+
+d1=data.frame(table(Var10))
+d2=data.frame(x=d1$Var10,y=d1$Freq)
+d2$x=factor(d2$x,levels=c("3rd grade","6th grade","9th grade"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#3F762B")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black",size=15)+
+  #theme_classic()+
+  labs(y="Number of teachers", x = "Grade") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5),panel.background = element_rect(fill = "#E6ECB0", colour = "#ffffff",size = 2, linetype = "solid"))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+#************************************ Slide 16, graph ****************************
+#Creating teacher score "VarP1"
+Cod<-function(A,B,C,D){
+  Score<-numeric()
+  for (i in 1:length(A)) {
+    if(A[i]=="5 clases"){SA=1} else {SA=0};
+    if(B[i]=="3 clases"){SB=1} else {SB=0};
+    if(C[i]=="Ejercicios de repaso - Conclusión del día - Ejercicios del día"){SC=1} else {SC=0};
+    if(D[i]=="Verificando sus respuestas con las respuestas del solucionario del CE."){SD=1} else {SD=0};
+    Score[i]=(SA+SB+SC+SD)/4*10}
+  for (i in 1:length(A)) {
+    if(Score[i]==0|Score[i]==2.5){Score[i]="Poor"};
+    if(Score[i]==5){Score[i]="Regular"};
+    if(Score[i]==7.5){Score[i]="Very good"};
+    if(Score[i]==10){Score[i]="Excellent"};
+  }
+  Score;
+}
+VarP1=Cod(Var11,Var12,Var13,Var14)
+#VarP1
+d1=data.frame(table(VarP1))
+d2=data.frame(x=d1$VarP1,y=d1$Freq)
+d2$x=factor(d2$x,levels=c("Poor","Regular","Very good","Excellent"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of teachers", x = "Knowledge of the strategy") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=1)) 
+
+#Var24 En qué momento revisa la tarea
+
+Contar<-function(x){
+  cat1=character();
+  cat2=character();
+  cat3=character();
+  cat4=character();
+  cat1=str_match(x,"En la escuela, en los recreos");
+  count1=length(cat1)-sum(is.na(cat1));
+  cat2=str_match(x, "En la escuela, en la hora de física");
+  count2=length(cat2)-sum(is.na(cat2));
+  cat3=str_match(x, "En la escuela, en los momentos libres");
+  count3=length(cat3)-sum(is.na(cat3));
+  cat4=str_match(x, "En la casa");
+  count4=length(cat4)-sum(is.na(cat4));
+  cat5=str_match(x, "No logro revisar la tarea");
+  count5=length(cat5)-sum(is.na(cat5));
+  
+  Tit=c("At recess","At physics time","In free time","At home","I don't manage to check them");
+  Freq=c(count1,count2,count3,count4,count5);
+  dataf=data.frame(Tit,Freq)
+  names(dataf) <- c('Var24','Freq')
+  dataf
+}
+
+d1=data.frame(Contar(Var24))
+d2=data.frame(x=d1$Var24,y=d1$Freq);
+d2$x<-enc2utf8(c("At recess","At physics time","In free time","At home","I don't manage to check them"))
+d2$x=factor(d2$x,levels=c("At recess","At physics time","In free time","At home","I don't manage to check them"));
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Numbers of teachers", x = "Time used for review") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+
+#************************************ Slide 17, graph ****************************
+
+#Var4 (Género)
+Traducir<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Masculino")
+      A[i]="Male"
+    if(A[i]=="Femenino")
+      A[i]="Female"
+  }
+  A;
+}
+DBS$Var4=Traducir(DBS$Var4)
+
+d1=data.frame(table(DBS$Var4))
+d2=data.frame(x=d1$Var1,y=d1$Freq)
+d2$y<-round(d2$y/length(DBS$Var4)*100,digits = 1)
+d2$x<-enc2utf8(c("Female","Male"))
+d2$x=factor(d2$x,levels=c("Female","Male"))
+
+ggplot(d2, aes(x="",y=y,fill=x)) + geom_col(color = "black")+
+  #ggtitle("Turno de trabajo")+ 
+  theme(plot.title = element_text(hjust = 0.5))+
+  geom_text(aes(label = percent(y/100)),position = position_stack(vjust = 0.5),size=10)+
+  coord_polar(theta = "y") +theme(legend.position = "right")+
+  scale_fill_manual(values = c("#3F762B", "#ffffff"))+
+  guides(fill = guide_legend(title = "Gender"))+
+  theme(axis.text = element_blank(),axis.ticks = element_blank(),
+        axis.title = element_blank(),panel.grid = element_blank(),
+        legend.text = element_text(size = 20),
+        legend.title = element_text(size = 20),
+        panel.background = element_rect(fill = "#ffffff"),
+        plot.background = element_rect(fill = "#ffffff"),
+        legend.background = element_rect(fill = "#ffffff"))
+
+#Var6 (zona)
+Traducir2<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Rural")
+      A[i]="Rural"
+    if(A[i]=="Urbana")
+      A[i]="Urban"
+  }
+  A;
+}
+DBS$Var6=Traducir2(DBS$Var6)
+
+d1=data.frame(table(DBS$Var6))
+d2=data.frame(x=d1$Var1,y=d1$Freq)
+d2$y<-round(d2$y/length(DBS$Var6)*100,digits = 1)
+d2$x<-enc2utf8(c("Rural","Urban"))
+d2$x=factor(d2$x,levels=c("Rural","Urban"))
+
+ggplot(d2, aes(x="",y=y,fill=x)) + geom_col(color = "black")+
+  #ggtitle("Turno de trabajo")+ 
+  theme(plot.title = element_text(hjust = 0.5))+
+  geom_text(aes(label = percent(y/100)),position = position_stack(vjust = 0.5),size=10)+
+  coord_polar(theta = "y") +theme(legend.position = "right")+
+  scale_fill_manual(values = c("#708090", "#ffffff"))+
+  guides(fill = guide_legend(title = "Zone"))+
+  theme(axis.text = element_blank(),axis.ticks = element_blank(),
+        axis.title = element_blank(),panel.grid = element_blank(),
+        legend.text = element_text(size = 20),
+        legend.title = element_text(size = 20),
+        panel.background = element_rect(fill = "#ffffff"),
+        plot.background = element_rect(fill = "#ffffff"),
+        legend.background = element_rect(fill = "#ffffff"))
+
+#Var 9 (grado)
+Traducir3<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="3.er grado")
+      A[i]="3rd grade"
+    if(A[i]=="6.o grado")
+      A[i]="6th grade"
+    if(A[i]=="9.o grado")
+      A[i]="9th grade"
+  }
+  A;
+}
+DBS$Var9=Traducir3(DBS$Var9)
+
+
+d1=data.frame(table(DBS$Var9))
+d2=data.frame(x=d1$Var1,y=d1$Freq)
+d2$x=factor(d2$x,levels=c("3rd grade","6th grade","9th grade"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#3F762B")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black",size=15)+
+  labs(y="Number of students", x = "Grade") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5),panel.background = element_rect(fill = "#E6ECB0", colour = "#ffffff",size = 2, linetype = "solid"))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+#************************************ Slide 18, graph *************************************************
+#Var35(mayor grado académico alcanzado)
+Traducir3<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="3.er grado")
+      A[i]="3rd grade"
+    if(A[i]=="6.o grado")
+      A[i]="6th grade"
+    if(A[i]=="9.o grado")
+      A[i]="9th grade"
+    if(A[i]=="Bachiller")
+      A[i]="Secondary level"
+    if(A[i]=="Técnico")
+        A[i]="Technician"
+    if(A[i]=="Egresado universitario")
+          A[i]="UGNG"
+    #University graduate(not graduated)
+    if(A[i]=="Graduado universitario")
+      #University graduate
+      A[i]="UG"
+    if(A[i]=="Sin escolaridad")
+      A[i]="No schooling"
+  }
+  A;
+}
+
+DBS$Var35=Traducir3(DBS$Var35)
+
+d1=data.frame(table(DBS$Var35))
+d1$Var1=c("3rd grade","6th grade","9th grade","Secondary level","UGNG","UG","Technician","No schooling")
+d1=data.frame(Var1,d1$Freq)
+d2=data.frame(x=d1$Var1,y=d1$Freq)
+d2$x=factor(d2$x,levels=c("3rd grade","6th grade","9th grade","Secondary level","UGNG","UG","Technician","No schooling"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of people", x = "Parents' academic level") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+#Var36 (Duration of the working day)
+
+Traducir4<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Aproximadamente 9 horas")
+      A[i]="Approximately 9 hours"
+    if(A[i]=="Aproximadamente 5 horas")
+      A[i]="Approximately 5 hours"
+    if(A[i]=="No lo puedo determinar, es variado")
+      A[i]="I can't determine, it's varied"
+    if(A[i]=="No poseo trabajo")
+      A[i]="I don't have a job"
+      }
+  A;
+}
+
+DBS$Var36=Traducir4(DBS$Var36)
+
+d1=data.frame(table(DBS$Var36))
+d2=data.frame(x=d1$Var1,y=d1$Freq)
+d2$x=factor(d2$x,levels=c("Approximately 9 hours","Approximately 5 hours","I can't determine, it's varied","I don't have a job"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#ffffff")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of people", x = "Duration of the working day") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+#************************************ Slide 19, graph *************************************************
+Convertir<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)) 
+    if(A[i]=="No dedico tiempo")
+    A[i]="No dedica tiempo"
+  A;
+}
+DBS$Var12=Convertir(DBS$Var12)
+Traducir4<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="No dedica tiempo")
+      A[i]="No time"
+    if(A[i]=="20 minutos")
+      A[i]="20 minutes"
+    if(A[i]=="1 hour")
+      A[i]="1 hora"
+    if(A[i]=="2 horas")
+      A[i]="2 hours"
+    if(A[i]=="Más de 2 horas")
+      A[i]="More than 2 hours"
+  }
+  A;
+}
+
+DBS$Var12=Traducir4(DBS$Var12)
+
+Time <- c(rep("No time",2),rep("20 minutes",2),rep("1 hour",2),rep("2 hours",2),rep("More than 2 hours",2))
+Participant <- rep(c("Students" , "Parents") ,5)
+ST=data.frame(table(DBS$Var12))
+P=data.frame(table(DBS$Var39))
+Values=c(4,10,48,43,187,174,112,132,117,109)
+data <- data.frame(Time,Participant,Values)
+data$Time=factor(data$Time,levels=c("No time","20 minutes","1 hour","2 hours","More than 2 hours"))
+
+ggplot(data, aes(fill=Participant, y=Values, x=Time)) +
+  geom_bar(position="dodge", stat="identity",color = "black")+ 
+  geom_text(aes(label = Values), position=position_dodge(.9), vjust=-0.3,color = "black")+
+  scale_fill_manual(values = c("#708090","#FFFFFF"))
+
+#Graph2
+Contar<-function(x){
+  cat1=character();
+  cat2=character();
+  cat3=character();
+  cat4=character();
+  cat1=str_match(x,"Clase del CE");
+  count1=length(cat1)-sum(is.na(cat1));
+  cat2=str_match(x, "Ejercicios del LT que no alcanzamos a hacer");
+  count2=length(cat2)-sum(is.na(cat2));
+  cat3=str_match(x, "Preparo mis propios ejercicios");
+  count3=length(cat3)-sum(is.na(cat3));
+  cat4=str_match(x, "Busqueda de videos  y videos que yo realizo en mi canal|Material didáctico para que cada estudiante observe y lo palpe");
+  count4=length(cat4)-sum(is.na(cat4));
+  
+  Tit=c("WB", "Unfinished TB exercises","Teacher's own exercises", "Others");
+  Freq=c(count1,count2,count3,count4);
+  dataf=data.frame(Tit,Freq)
+  names(dataf) <- c('Var22','Freq')
+  dataf
+}
+
+Contar2<-function(x){
+  cat1=character();
+  cat2=character();
+  cat3=character();
+  cat4=character();
+  cat1=str_match(x,"Clase del Cuaderno de Ejercicios ESMATE.");
+  count1=length(cat1)-sum(is.na(cat1));
+  cat2=str_match(x, "Los ejercicios del Libro de texto ESMATE que no alcanzamos a hacer.");
+  count2=length(cat2)-sum(is.na(cat2));
+  cat3=str_match(x, "Lleva otros ejercicios que ha buscado en otros libros o Internet.");
+  count3=length(cat3)-sum(is.na(cat3));
+  cat4=str_match(x, "Copiar la clase de libro de texto y resolver los ejercicios del libro de ejercicios|Ejercicios que el pone|Resolver Ejercicios De La Clase Que El Nos Explica  ");
+  count4=length(cat4)-sum(is.na(cat4));
+  
+  Tit=c("WB", "Unfinished TB exercises","Teacher's own exercises", "Others");
+  Freq=c(count1,count2,count3,count4);
+  dataf=data.frame(Tit,Freq)
+  names(dataf) <- c('Var30','Freq')
+  dataf
+}
+
+#Para que la gráfica presenta los resultados en porcentajes
+data_S20<- data.frame(Contar2(DBS$Var30),Contar(Var22))
+data_S20$Freq<-data_S20$Freq/length(DBS$Var30)*100
+data_S20$Freq.1<-data_S20$Freq.1/length(Var22)*100
+
+Type_of_homework <- c(rep("WB",2),rep("Unfinished TB exercises",2),rep("Teacher's own exercises",2),rep("Others",2))
+Participant <- rep(c("Students","Teachers"),4)
+ST=data.frame(table(DBS$Var12))
+Te=data.frame(table(DBS$Var39))
+Values=c(84,75,60,76,3,22,0,2)
+data <- data.frame(Type_of_homework,Participant,Values)
+data$Type_of_homework=factor(data$Type_of_homework,levels=c("WB","Unfinished TB exercises","Teacher's own exercises","Others"))
+
+ggplot(data, aes(fill=Participant, y=Values, x=Type_of_homework)) + 
+  geom_bar(position="dodge", stat="identity",color = "black")+ 
+  geom_text(aes(label = paste(format(Values), "%")), position=position_dodge(.9), vjust=-0.3,color = "black")+
+  scale_fill_manual(values = c("#ffffff","#708090"))
+
+#************************************ Slide 20, graph *************************************************
+#Var31Y32
+Time <- c(rep("1 time",2),rep("2 times",2),rep("3 times",2),rep("4 times",2),rep("5 times",2),rep("Not at all",2))
+Options <- rep(c("Homework assignment","Homework review"),6)
+#Para obtener las frecuencias
+ST_A=data.frame(table(DBS$Var31))
+ST_R=data.frame(table(DBS$Var32))
+#Para introducir las frecuencias
+Values=c(115,155,83,64,75,78,42,30,149,132,4,9)
+#Formando el frame
+data <- data.frame(Time,Options,Values)
+#Indicando el orden de las barras en la gráfica
+data$Time=factor(data$Time,levels=c("Not at all","1 time","2 times","3 times","4 times","5 times"))
+
+ggplot(data, aes(fill=Options, y=Values, x=Time)) + 
+  geom_bar(position="dodge", stat="identity",color = "black")+ 
+  geom_text(aes(label = Values), position=position_dodge(.9), vjust=-0.3,color = "black")+
+  scale_fill_manual(values = c("#FFFFFF","#708090"))
+
+#Graph 2
+Traducir5<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="1 vez por semana")
+      A[i]="1 time per week"
+    if(A[i]=="3 veces por semana")
+      A[i]="3 times per week"
+    if(A[i]=="5 veces por semana")
+      A[i]="5 times per week"
+    if(A[i]=="Ninguna vez")
+      A[i]="Not at all"
+  }
+  A;
+}
+
+DBS$Var46=Traducir5(DBS$Var46)
+
+d1=data.frame(table(DBS$Var46))
+d2=data.frame(x=d1$Var1,y=d1$Freq)
+d2$x=factor(d2$x,levels=c("Not at all","1 time per week","3 times per week","5 times per week"))
+
+ggplot(d2, aes(x,y)) +
+  geom_bar(stat = "Identity",color="black", fill="#FFFFFF")+ 
+  geom_text(aes(label = y), vjust = -0.3, color = "black")+
+  labs(y="Number of students", x = "Number of times") +
+  #ggtitle("Participación de los profesores por departamento\n ")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme_minimal() +  
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) 
+
+#Prueba chi cuadrado
+#DBS$Var12(tiempo disponible para estudiar) and DBS$Var4(género)
+data=data.frame(DBS$Var12,DBS$Var4)
+table(data)
+
+CambiarInt<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="No dedico tiempo")
+      A[i]="Menos de 1 hora"
+    if(A[i]=="20 minutos")
+      A[i]="Menos de 1 hora"
+  }
+  A;
+}
+
+N_DBS=CambiarInt(DBS$Var12)
+data=data.frame(N_DBS,DBS$Var4)
+dataf=table(data)
+
+chisq.test (dataf)
+
+#DBS$Var12(tiempo disponible para estudiar) and DBS$Var6(zona)
+data=data.frame(DBS$Var12,DBS$Var6)
+table(data)
+
+CambiarInt<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="No dedico tiempo")
+      A[i]="Menos de 1 hora"
+    if(A[i]=="20 minutos")
+      A[i]="Menos de 1 hora"
+  }
+  A;
+}
+
+N_DBS=CambiarInt(DBS$Var12)
+data=data.frame(N_DBS,DBS$Var6)
+dataf=table(data)
+
+chisq.test (dataf)
+
+#DBS$Var14(Cantidad de motivación para hacer la tarea) and DBS$Var41(Tipo de ayuda)
+Traducir11<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Solo me recuerda que tengo que cumplir con la tarea de Matemática."|A[i]=="Solo le recuerdo que tiene que cumplir con la tarea de Matemática.")
+      A[i]="Answer_1"
+    if(A[i]=="Me recuerda hacer la tarea y garantiza que tenga el tiempo disponible para estudiar."|A[i]=="Le recuerdo hacer su tarea y garantizo que tenga el tiempo disponible para estudiar.")
+      A[i]="Answer_2"
+    if(A[i]=="Me recuerda hacer la tarea, garantiza que tenga el tiempo disponible para estudiar y supervisa mi trabajo mientras hago la tarea."|A[i]=="Le recuerdo hacer su tarea, garantizo que tenga el tiempo disponible para estudiar y superviso su trabajo mientras hace la tarea.")
+      A[i]="Answer_3"
+    if(A[i]=="Paga a una persona para que me ayude a cumplir con la tarea."|A[i]=="Pago a una persona para que apoye a mi hijo o tutelado a cumplir con la tarea.")
+      A[i]="Answer_4"
+    if(A[i]=="Ninguno"|A[i]=="Ninguna"|A[i]=="Me ayuda"|A[i]=="me aayuda cundo no entiendo"|A[i]=="me motiva hacer la tarea"|A[i]=="Solo con materiales del ministerio de educación nos manda y enseña en clases"|A[i]=="Me motiva y alienta al hacer mis tareas no sólo de matemáticas  si no también  en otra materias"|A[i]=="Yo misma me acuerdo y me motivo sola" |A[i]=="No me proporciona ayuda"|A[i]=="sino entiende resolvemos el ejercicio  juntos y le oponemos  la respuesta"|A[i]=="Casi no le digo pero yo veo que el la hace"|A[i]=="Ella el mayor tiempo pasa sola en casa y ella trabaja sola"|A[i]=="No me dice nada , yo soy el que cumplo con la tarea de matemática sin que me digan nada"|A[i]=="Pues suelo pasar sola en mi casa el mayor tiempo y pues nadie me dice que trabaje, yo trabajo por voluntad propia"|A[i]=="Mis padres trabajan vienen noche y mis abuelos no pueden mate"|A[i]=="Casi nada"|A[i]=="No me dice nada :p ( es mi responsabilidad dice )"|A[i]=="No me dicen nada, pero igual siempre las hago")
+      A[i]="Answer_0"
+  }
+  A;
+}
+DBS$Var41=Traducir11(DBS$Var41)
+
+data=data.frame(DBS$Var14,DBS$Var41)
+table(data)
+
+CambiarInt<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Answer_0")
+      A[i]="Poco involucramiento"
+    if(A[i]=="Answer_1")
+      A[i]="Involucramiento regular"
+    if(A[i]=="Answer_2")
+      A[i]="Involucramiento alto"
+    if(A[i]=="Answer_3"|A[i]=="Answer_4")
+      A[i]="Ningun involucramiento"
+  }
+  A;
+}
+
+N_DBS=CambiarInt(DBS$Var41)
+data=data.frame(N_DBS,DBS$Var14)
+dataf=table(data)
+
+
+Cod2<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Ningun involucramiento"|A[i]=="Poco involucramiento")
+      A[i]="Poco o ninguno"
+  }
+  A;
+}
+N_DBS=Cod2(N_DBS)
+
+Cod3<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Poco"|A[i]=="Nada")
+      A[i]="Poco o nada"
+    if(A[i]=="Bastante")
+      A[i]="Alto"
+    if(A[i]=="Lo normal")
+      A[i]="Promedio"
+  }
+  A;
+}
+
+DBS$Var14=Cod3(DBS$Var14)
+
+data=data.frame(N_DBS,DBS$Var14)
+dataf=table(data)
+chisq.test (dataf)
+
+#********************* Correlación después de las observaciones ************************
+#Tiempo disponible (DBS$Var12) y el género(DBS$Var4)
+data=data.frame(DBS$Var12,DBS$Var4)
+table(data)
+CambiarInt<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="No dedico tiempo")
+      A[i]="Menos de 1 hora"
+    if(A[i]=="20 minutos")
+      A[i]="Menos de 1 hora"
+  }
+  A;
+}
+
+N_DBS=CambiarInt(DBS$Var12)
+data=data.frame(N_DBS,DBS$Var4)
+table(data)
+Codificar_1<-function(A){
+  score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Menos de 1 hora")
+      score[i]=1
+    if(A[i]=="1 hora")
+      score[i]=2
+    if(A[i]=="2 horas")
+      score[i]=3
+    if(A[i]=="Más de 2 horas")
+      score[i]=4
+  }
+  score;
+}
+Codificar_2<-function(A){
+  score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Masculino")
+      score[i]=0
+    if(A[i]=="Femenino")
+      score[i]=1
+  }
+  score;
+}
+var_o=Codificar_1(N_DBS)
+var_d=Codificar_2(DBS$Var4)
+cor.test(var_o,var_d)
+cor.test(var_d,var_o)
+
+#DBS$Var14(Cantidad de motivación para hacer la tarea) and DBS$Var41(Tipo de ayuda)
+#Significance Test for Kendall's Tau-b
+Traducir11<-function(A){
+  Score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Solo me recuerda que tengo que cumplir con la tarea de Matemática."|A[i]=="Solo le recuerdo que tiene que cumplir con la tarea de Matemática.")
+      A[i]="Answer_1"
+    if(A[i]=="Me recuerda hacer la tarea y garantiza que tenga el tiempo disponible para estudiar."|A[i]=="Le recuerdo hacer su tarea y garantizo que tenga el tiempo disponible para estudiar.")
+      A[i]="Answer_2"
+    if(A[i]=="Me recuerda hacer la tarea, garantiza que tenga el tiempo disponible para estudiar y supervisa mi trabajo mientras hago la tarea."|A[i]=="Le recuerdo hacer su tarea, garantizo que tenga el tiempo disponible para estudiar y superviso su trabajo mientras hace la tarea.")
+      A[i]="Answer_3"
+    if(A[i]=="Paga a una persona para que me ayude a cumplir con la tarea."|A[i]=="Pago a una persona para que apoye a mi hijo o tutelado a cumplir con la tarea.")
+      A[i]="Answer_4"
+    if(A[i]=="Ninguno"|A[i]=="Ninguna"|A[i]=="Me ayuda"|A[i]=="me aayuda cundo no entiendo"|A[i]=="me motiva hacer la tarea"|A[i]=="Solo con materiales del ministerio de educación nos manda y enseña en clases"|A[i]=="Me motiva y alienta al hacer mis tareas no sólo de matemáticas  si no también  en otra materias"|A[i]=="Yo misma me acuerdo y me motivo sola" |A[i]=="No me proporciona ayuda"|A[i]=="sino entiende resolvemos el ejercicio  juntos y le oponemos  la respuesta"|A[i]=="Casi no le digo pero yo veo que el la hace"|A[i]=="Ella el mayor tiempo pasa sola en casa y ella trabaja sola"|A[i]=="No me dice nada , yo soy el que cumplo con la tarea de matemática sin que me digan nada"|A[i]=="Pues suelo pasar sola en mi casa el mayor tiempo y pues nadie me dice que trabaje, yo trabajo por voluntad propia"|A[i]=="Mis padres trabajan vienen noche y mis abuelos no pueden mate"|A[i]=="Casi nada"|A[i]=="No me dice nada :p ( es mi responsabilidad dice )"|A[i]=="No me dicen nada, pero igual siempre las hago")
+      A[i]="Answer_0"
+  }
+  A;
+}
+DBS$Var41=Traducir11(DBS$Var41)
+Codificar_3<-function(A){
+  score<-numeric()
+  for (i in 1:length(A)){ 
+    if(A[i]=="Answer_0")
+      score[i]=2
+    if(A[i]=="Answer_1")
+      score[i]=3
+    if(A[i]=="Answer_2")
+      score[i]=4
+    if(A[i]=="Answer_3"|A[i]=="Answer_4")
+      score[i]=1
+  }
+  score;
+}
+N_DBS=Codificar_3(DBS$Var41)
+Codificar_4<-function(A){
+  score<-numeric()
+  for (i in 1:length(A)){
+    if(A[i]=="Nada")
+      score[i]=1
+    if(A[i]=="Poco")
+      score[i]=2
+    if(A[i]=="Lo normal")
+      score[i]=3
+    if(A[i]=="Bastante")
+      score[i]=4
+  }
+  score;
+}
+DBS$Var14=Codificar_4(DBS$Var14)
+data=data.frame(N_DBS,DBS$Var14)
+cor(data, method="kendall", use="pairwise")
+#cor.test(N_DBS,DBS$Var14, method="kendall") 
+cor.test(N_DBS,DBS$Var14, method = 'spearman')
+
+
